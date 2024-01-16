@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Int Array Benchmark" />
+  <title>Int Array Benchmark</title>
+  <script src="./elm.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js"></script>
+  <script>
+    window.ports = Elm.Main.init().ports;
+  </script>
+</head>
+
+<body>
+  <script type="module" src="./index.js"></script>
+  <div style="width: 800px;"><canvas id="senders"></canvas></div>
+  <div style="width: 800px;"><canvas id="receivers"></canvas></div>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "elm-bytes-benchmark",
+  "version": "1.0.0",
+  "description": "Compares different possibilities of passing bytes from and to Elm",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server dist",
+    "build": "elm make src/Main.elm --debug --output=dist/elm.js"
+  },
+  "author": "Andreas Molitor",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
