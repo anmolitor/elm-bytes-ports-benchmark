@@ -9,14 +9,20 @@ The goal of this benchmark is to compare the different available workarounds.
 
 ## Result
 
-TL;DR: For transferring small amounts (< 5kb) of data at a time, use a JSON compatible encoding
-such as Array (of numbers) or Base64. The difference between the two is negligible.
-For big amounts of data, use the Elm File API for JS -> Elm and a HTTP prototype hack for Elm -> JS.
+TL;DR: For transferring small amounts (< 5kb) of data at a time, a JSON compatible encoding
+such as Array (of numbers) or Base64 is fine. The difference between the two is negligible.
+For big amounts of data, use a HTTP prototype hack (more details below). The overhead of the HTTP method is
+remarkably low, so there is no benefit of implementing multiple methods and deciding which method to use depending on size.
 
-The first graph is JS -> Elm, the second Elm -> JS.
-"identity" measures overhead due to the method used for benchmarking by just passing the Bytes back and forth as Json.Encode.Value.
+### JavaScript -> Elm
 
-<img src='./benchmark.png' width=100% alt="Graph displaying the results">
+<img src='./results/jsToElm.png' width=100% alt="Graph displaying the results for sending bytes from JavaScript to Elm">
+
+### Elm -> JavaScript
+
+<img src='./results/elmToJs.png' width=100% alt="Graph displaying the results for sending bytes from Elm to JavaScript">
+
+Note: "identity" measures overhead due to the method used for benchmarking by just passing the Bytes back and forth as Json.Encode.Value.
 
 ## The contestants
 
@@ -35,22 +41,18 @@ Similar approach but more traditional in a sense, since bytes are often encoded 
 
 **Warning**: Calling `File.toBytes` apparently causes memory to be leaked: https://github.com/elm/file/issues/31
 
-The package `elm/file` includes a `File.decoder` as well as a `File.toBytes` function. 
+The package `elm/file` includes a `File.decoder` as well as a `File.toBytes` function.
 
 Therefore we can call `new File(bytes, '')` on the JS side and pass that into Elm over a port without any trouble. The benchmark shows the overhead is constant/independent of the bytes size.
 
-To my knowledge, this is the best method for large binary payloads if you have to go over a port (in many cases you get the data from a server directly, which enables you to just use the Elm Http API).
+This seems to perform consistently worse that the below Http approach so I would not recommend it.
 
 ### Http "Taskport"
 
-I call this one Taskport, since the idea is based on the 
+I call this one Taskport, since the idea is based on the
 [elm-taskport](https://package.elm-lang.org/packages/lobanov/elm-taskport/2.0.1/) library.
 
-Essentially, we send a HTTP POST request from Elm with a nonsense URL like `elm://`.
+Essentially, we send a HTTP request from Elm with a nonsense URL like `elm://post`.
 On the JS side, we monkeypatch the XHRHttpRequest prototype by intercepting the `open` and `send` methods. We check for the nonsense URL or prefix and send the bytes from JS directly instead of sending a request.
 
-This, for some reason, has remarkably low overhead according to the benchmark and is thus the best solution from Elm to JS for large bytes size.
-
-
-
-
+This, for some reason, has remarkably low overhead according to the benchmark and is thus the best solution from Elm to JS for large bytes size. Even for small byte sizes and the impractical JS to Elm direction (JS tells the Elm runtime over a port that it should get some data via HTTP), the performance rivals the Json-based approaches, so you shouldn't need to implement multiple approaches.

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "http-server dist",
-    "build": "elm make src/Main.elm --debug --output=dist/elm.js"
+    "build": "elm make src/Main.elm --optimize --output=dist/elm.js"
   },
   "author": "Andreas Molitor",
   "license": "ISC",

@@ -10,13 +10,14 @@ const senders = [
   ["base64Port", base64Port.send, "rgb(0, 0, 255)"],
   ["identity", identity.send, "rgb(120, 120, 120)"],
   ["filePort", filePort.send, "rgb(0, 0, 0)"],
+  ["httpTask", httpTask.send, "rgb(255, 255, 0)"],
 ];
 
 const receivers = [
   ["intArray", intArray.receive, "rgb(255, 0, 0)"],
   ["base64Port", base64Port.receive, "rgb(0, 0, 255)"],
   ["identity", identity.receive, "rgb(120, 120, 120)"],
-  ["httpTask", httpTask.receive, "rgb(0, 0, 0)"],
+  ["httpTask", httpTask.receive, "rgb(255, 255, 0)"],
 ];
 
 /**
@@ -57,7 +58,7 @@ function areUint8ArraysEqual(arr1, arr2) {
 let senderData = Array.from(senders, () => []);
 let receiverData = Array.from(receivers, () => []);
 
-const ATTEMPTS = 10;
+const ATTEMPTS = 100;
 
 /**
  *
@@ -128,7 +129,7 @@ const sizes = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
     scales: {
       x: {
         ticks: {
-          callback: function (_,index) {
+          callback: function (_, index) {
             return (sizes[index] / 1000).toFixed(2) + "kb";
           },
         },
