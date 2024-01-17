@@ -56,3 +56,17 @@ Essentially, we send a HTTP request from Elm with a nonsense URL like `elm://pos
 On the JS side, we monkeypatch the XHRHttpRequest prototype by intercepting the `open` and `send` methods. We check for the nonsense URL or prefix and send the bytes from JS directly instead of sending a request.
 
 This, for some reason, has remarkably low overhead according to the benchmark and is thus the best solution from Elm to JS for large bytes size. Even for small byte sizes and the impractical JS to Elm direction (JS tells the Elm runtime over a port that it should get some data via HTTP), the performance rivals the Json-based approaches, so you shouldn't need to implement multiple approaches.
+
+## Method used for benchmarking
+
+Each contestant has a JS file which
+
+- implements a `send` method with the signature `Uint8Array -> Promise<number>`. The returned number is the array length and used as a sanity check that the bytes were passed successfully
+- implements a `receive` method with the signature `() -> Promise<Uint8Array>`.
+
+The benchmark in `dist/index.js` then executes each send method for each contestant sequentially and measures the time via
+the Browsers performance API. Methods are executed `n = 100` times and the average time is used to hopefully even out garbage collector spikes a bit. Afterwards, each receive method is called sequentially with the same approach.
+
+Uint8Arrays of different sizes are generated outside of the timing in Javascript.
+
+Chart.js is used to visualize the results.
